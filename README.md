@@ -67,9 +67,9 @@ Cada medicamento registrado contiene:
 
 ✅ **Completo y Funcional**
 
-- [x] Diseño UML
-- [x] Estructura de paquetes (patrón Spring Boot)
-- [x] Modelo de datos (Medicamento)
+- ✅ Diseño UML
+- ✅ Estructura de paquetes (patrón Spring Boot)
+- ✅ Modelo de datos (Medicamento)
 - [x] Interfaz gráfica completa
 - [x] Controlador y lógica CRUD
 - [x] Persistencia de datos (serialización)
