@@ -1,0 +1,26 @@
+# Archivos compilados
+*.class
+
+# Archivos de paquetes
+*.jar
+*.war
+*.ear
+
+# Archivos de datos
+*.dat
+*.ser
+
+# Directorios IDE
+.vscode/
+.idea/
+*.iml
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Carpetas de compilación
+bin/
+build/
+target/
+out/
