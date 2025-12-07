@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagramas UML - Gestor de Farmacia</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        @media print {
+            @page {
+                size: A4;
+                margin: 2cm;
+            }
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        h1 {
+            color: #2C5F7C;
+            border-bottom: 3px solid #2C5F7C;
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        
+        h2 {
+            color: #3D7FA6;
+            border-bottom: 2px solid #E0E0E0;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        
+        h3 {
+            color: #555;
+            margin-top: 20px;
+        }
+        
+        .mermaid {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border: 1px solid #dee2e6;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #2C5F7C;
+            color: white;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .cover-page {
+            text-align: center;
+            padding: 100px 20px;
+            min-height: 80vh;
+        }
+        
+        .cover-page h1 {
+            font-size: 48px;
+            margin-top: 100px;
+            border: none;
+        }
+        
+        .cover-page .subtitle {
+            font-size: 24px;
+            color: #666;
+            margin-top: 20px;
+        }
+        
+        .cover-page .date {
+            font-size: 18px;
+            color: #999;
+            margin-top: 40px;
+        }
+        
+        .legend {
+            background-color: #fff3cd;
+            padding: 15px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+        }
+        
+        .legend ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Portada -->
+    <div class="cover-page">
+        <h1>📊 Diagramas UML</h1>
+        <div class="subtitle">Gestor de Farmacia - Sistema de Registro de Medicamentos</div>
+        <div class="date">Diciembre 2025</div>
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- Arquitectura General -->
+    <h1>Arquitectura General del Sistema</h1>
+    <p>Vista general de la arquitectura del sistema mostrando la relación entre todos los componentes principales.</p>
+    <div class="mermaid">
+graph TB
+    MainClass[Main]
+    
+    subgraph Model
+        Medicamento[Medicamento]
+    end
+    
+    subgraph View
+        VentanaPrincipal[VentanaPrincipal]
+        
+        subgraph Components
+            PanelFormulario[PanelFormularioMedicamento]
+            PanelTabla[PanelTablaMedicamentos]
+            PanelBotones[PanelBotonesCRUD]
+        end
+    end
+    
+    subgraph Controller
+        ControladorMedicamentos[ControladorMedicamentos]
+    end
+    
+    subgraph Repository
+        GestorMedicamentos[GestorMedicamentos]
+    end
+    
+    subgraph Util
+        DialogoAcercaDe[DialogoAcercaDe]
+        ValidadorFormulario[ValidadorFormulario]
+        MedicamentoMapper[MedicamentoMapper]
+        MensajesUI[MensajesUI]
+    end
+    
+    MainClass --> VentanaPrincipal
+    MainClass --> ControladorMedicamentos
+    MainClass --> GestorMedicamentos
+    
+    VentanaPrincipal --> PanelFormulario
+    VentanaPrincipal --> PanelTabla
+    VentanaPrincipal --> PanelBotones
+    VentanaPrincipal --> DialogoAcercaDe
+    
+    ControladorMedicamentos --> VentanaPrincipal
+    ControladorMedicamentos --> GestorMedicamentos
+    ControladorMedicamentos --> ValidadorFormulario
+    ControladorMedicamentos --> MedicamentoMapper
+    ControladorMedicamentos --> MensajesUI
+    
+    GestorMedicamentos --> Medicamento
+    
+    ValidadorFormulario --> VentanaPrincipal
+    MedicamentoMapper --> VentanaPrincipal
+    MedicamentoMapper --> Medicamento
+    MensajesUI --> VentanaPrincipal
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- Diagrama de Clases -->
+    <h1>Diagrama de Clases Detallado</h1>
+    <p>Diagrama completo mostrando todas las clases del sistema con sus atributos, métodos y relaciones.</p>
+    <div class="mermaid">
+classDiagram
+    class Medicamento {
+        -String codigo
+        -String nombreComercial
+        -String laboratorio
+        -String tipoVenta
+        -String formato
+        -boolean requiereFrio
+        +Medicamento(codigo, nombre, laboratorio, tipoVenta, formato, requiereFrio)
+        +getCodigo() String
+        +getNombreComercial() String
+        +getLaboratorio() String
+        +getTipoVenta() String
+        +getFormato() String
+        +isRequiereFrio() boolean
+    }
+    
+    class VentanaPrincipal {
+        -PanelFormularioMedicamento panelFormulario
+        -PanelTablaMedicamentos panelTabla
+        -PanelBotonesCRUD panelBotones
+        +VentanaPrincipal()
+        +getTxtCodigo() JTextField
+        +getTablaMedicamentos() JTable
+        +getBtnAgregar() JButton
+        +limpiarCampos()
+        +mostrarMensaje(mensaje, titulo, tipo)
+    }
+    
+    class PanelFormularioMedicamento {
+        -JTextField txtCodigo
+        -JTextField txtNombreComercial
+        -JComboBox~String~ cmbTipoVenta
+        +PanelFormularioMedicamento()
+        +getTxtCodigo() JTextField
+        +limpiarCampos()
+    }
+    
+    class PanelTablaMedicamentos {
+        -JTable tablaMedicamentos
+        -DefaultTableModel modeloTabla
+        +PanelTablaMedicamentos()
+        +getTablaMedicamentos() JTable
+        +getModeloTabla() DefaultTableModel
+    }
+    
+    class PanelBotonesCRUD {
+        -JButton btnAgregar
+        -JButton btnEditar
+        -JButton btnEliminar
+        -JButton btnLimpiar
+        +PanelBotonesCRUD()
+        +getBtnAgregar() JButton
+    }
+    
+    class ControladorMedicamentos {
+        -boolean modoEdicion
+        -VentanaPrincipal vista
+        -GestorMedicamentos gestor
+        -ValidadorFormulario validador
+        -MedicamentoMapper mapper
+        +ControladorMedicamentos(vista, gestor)
+        -agregarMedicamento()
+        -eliminarMedicamento()
+        -cargarDatosEnTabla()
+    }
+    
+    class GestorMedicamentos {
+        -List~Medicamento~ medicamentos
+        -String rutaArchivo
+        +agregarMedicamento(medicamento) boolean
+        +eliminarMedicamento(codigo) boolean
+        +buscarPorCodigo(codigo) Medicamento
+        +guardarDatos()
+    }
+    
+    class ValidadorFormulario {
+        -VentanaPrincipal vista
+        +validarCampos() boolean
+    }
+    
+    class MedicamentoMapper {
+        -VentanaPrincipal vista
+        +crearDesdeFformulario() Medicamento
+        +cargarEnFormulario(medicamento)
+    }
+    
+    class MensajesUI {
+        +mostrarMedicamentoAgregado(vista)$ void
+        +confirmarEliminacion(vista, codigo)$ boolean
+    }
+    
+    VentanaPrincipal *-- PanelFormularioMedicamento
+    VentanaPrincipal *-- PanelTablaMedicamentos
+    VentanaPrincipal *-- PanelBotonesCRUD
+    
+    ControladorMedicamentos --> VentanaPrincipal
+    ControladorMedicamentos --> GestorMedicamentos
+    ControladorMedicamentos *-- ValidadorFormulario
+    ControladorMedicamentos *-- MedicamentoMapper
+    
+    GestorMedicamentos o-- Medicamento
+    ValidadorFormulario --> VentanaPrincipal
+    MedicamentoMapper --> Medicamento
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- Diagrama de Paquetes -->
+    <h1>Diagrama de Paquetes</h1>
+    <p>Organización del proyecto por paquetes y dependencias entre ellos.</p>
+    <div class="mermaid">
+graph LR
+    subgraph com.gestorfarmacia
+        M[Main]
+        
+        subgraph model
+            Med[Medicamento]
+        end
+        
+        subgraph view
+            VP[VentanaPrincipal]
+            
+            subgraph components
+                PF[PanelFormularioMedicamento]
+                PT[PanelTablaMedicamentos]
+                PB[PanelBotonesCRUD]
+            end
+        end
+        
+        subgraph controller
+            CM[ControladorMedicamentos]
+        end
+        
+        subgraph repository
+            GM[GestorMedicamentos]
+        end
+        
+        subgraph util
+            DA[DialogoAcercaDe]
+            VF[ValidadorFormulario]
+            MM[MedicamentoMapper]
+            MU[MensajesUI]
+        end
+    end
+    
+    M --> view
+    M --> controller
+    M --> repository
+    
+    view --> components
+    view --> util
+    
+    controller --> view
+    controller --> repository
+    controller --> model
+    controller --> util
+    
+    repository --> model
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- Diagrama de Secuencia: Agregar -->
+    <h1>Diagrama de Secuencia: Agregar Medicamento</h1>
+    <p>Flujo completo del proceso de agregar un nuevo medicamento al sistema.</p>
+    <div class="mermaid">
+sequenceDiagram
+    actor Usuario
+    participant Vista as VentanaPrincipal
+    participant Controlador as ControladorMedicamentos
+    participant Validador as ValidadorFormulario
+    participant Mapper as MedicamentoMapper
+    participant Mensajes as MensajesUI
+    participant Gestor as GestorMedicamentos
+    participant Modelo as Medicamento
+    
+    Usuario->>Vista: Rellena formulario
+    Usuario->>Vista: Click Agregar
+    Vista->>Controlador: actionPerformed()
+    
+    Controlador->>Validador: validarCampos()
+    Validador-->>Controlador: true
+    
+    Controlador->>Mapper: crearDesdeFformulario()
+    Mapper->>Modelo: new Medicamento(...)
+    Modelo-->>Mapper: medicamento
+    Mapper-->>Controlador: medicamento
+    
+    Controlador->>Gestor: agregarMedicamento(medicamento)
+    Gestor->>Gestor: guardarDatos()
+    Gestor-->>Controlador: true
+    
+    Controlador->>Mensajes: mostrarMedicamentoAgregado(vista)
+    Mensajes->>Vista: mostrarMensaje("Éxito", ...)
+    Vista->>Usuario: Diálogo "Medicamento agregado"
+    
+    Controlador->>Controlador: cargarDatosEnTabla()
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- Diagrama de Secuencia: Editar -->
+    <h1>Diagrama de Secuencia: Editar Medicamento</h1>
+    <p>Flujo completo del proceso de editar un medicamento existente.</p>
+    <div class="mermaid">
+sequenceDiagram
+    actor Usuario
+    participant Vista as VentanaPrincipal
+    participant Controlador as ControladorMedicamentos
+    participant Mapper as MedicamentoMapper
+    participant Gestor as GestorMedicamentos
+    
+    Usuario->>Vista: Selecciona fila
+    Usuario->>Vista: Click Editar
+    Vista->>Controlador: actionPerformed()
+    
+    Controlador->>Vista: getSelectedRow()
+    Vista-->>Controlador: 2
+    
+    Controlador->>Gestor: buscarPorCodigo("ABC123")
+    Gestor-->>Controlador: medicamento
+    
+    Controlador->>Controlador: activarModoEdicion(medicamento)
+    Controlador->>Mapper: cargarEnFormulario(medicamento)
+    
+    Usuario->>Vista: Modifica datos
+    Usuario->>Vista: Click Actualizar
+    
+    Controlador->>Gestor: eliminarMedicamento(codigoOriginal)
+    Controlador->>Mapper: crearDesdeFformulario()
+    Controlador->>Gestor: agregarMedicamento(medicamentoActualizado)
+    
+    Controlador->>Controlador: cancelarEdicion()
+    </div>
+
+    <div class="page-break"></div>
+
+    <!-- Métricas -->
+    <h1>Métricas del Proyecto</h1>
+    <p>Resumen de líneas de código y responsabilidades de cada clase.</p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Clase</th>
+                <th>Líneas</th>
+                <th>Responsabilidad</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td><strong>Main</strong></td><td>24</td><td>Inicialización</td></tr>
+            <tr><td><strong>Medicamento</strong></td><td>~50</td><td>Modelo de datos</td></tr>
+            <tr><td><strong>VentanaPrincipal</strong></td><td>127</td><td>Orquestación de UI</td></tr>
+            <tr><td><strong>PanelFormularioMedicamento</strong></td><td>135</td><td>Formulario de entrada</td></tr>
+            <tr><td><strong>PanelTablaMedicamentos</strong></td><td>44</td><td>Visualización de datos</td></tr>
+            <tr><td><strong>PanelBotonesCRUD</strong></td><td>49</td><td>Botones de acción</td></tr>
+            <tr><td><strong>ControladorMedicamentos</strong></td><td>162</td><td>Lógica de negocio</td></tr>
+            <tr><td><strong>GestorMedicamentos</strong></td><td>81</td><td>Persistencia</td></tr>
+            <tr><td><strong>DialogoAcercaDe</strong></td><td>47</td><td>Diálogo informativo</td></tr>
+            <tr><td><strong>ValidadorFormulario</strong></td><td>52</td><td>Validación</td></tr>
+            <tr><td><strong>MedicamentoMapper</strong></td><td>75</td><td>Mapeo de datos</td></tr>
+            <tr><td><strong>MensajesUI</strong></td><td>54</td><td>Mensajes centralizados</td></tr>
+            <tr><td><strong>TOTAL</strong></td><td><strong>~900</strong></td><td>Todo el proyecto</td></tr>
+        </tbody>
+    </table>
+
+    <div class="page-break"></div>
+
+    <!-- Patrones de Diseño -->
+    <h1>Patrones de Diseño Aplicados</h1>
+    
+    <h2>1. MVC (Model-View-Controller)</h2>
+    <ul>
+        <li><strong>Model</strong>: Medicamento</li>
+        <li><strong>View</strong>: VentanaPrincipal + Components</li>
+        <li><strong>Controller</strong>: ControladorMedicamentos</li>
+    </ul>
+
+    <h2>2. Composite Pattern</h2>
+    <p>VentanaPrincipal actúa como composite conteniendo múltiples componentes:</p>
+    <ul>
+        <li>PanelFormularioMedicamento</li>
+        <li>PanelTablaMedicamentos</li>
+        <li>PanelBotonesCRUD</li>
+    </ul>
+
+    <h2>3. Strategy Pattern</h2>
+    <ul>
+        <li><strong>ValidadorFormulario</strong>: Estrategia de validación</li>
+        <li><strong>MedicamentoMapper</strong>: Estrategia de mapeo</li>
+    </ul>
+
+    <h2>4. Facade Pattern</h2>
+    <ul>
+        <li><strong>MensajesUI</strong>: Fachada simplificada para JOptionPane</li>
+    </ul>
+
+    <h2>5. Repository Pattern</h2>
+    <ul>
+        <li><strong>GestorMedicamentos</strong>: Repositorio de Medicamentos con persistencia</li>
+    </ul>
+
+    <div class="page-break"></div>
+
+    <!-- Leyenda -->
+    <h1>Leyenda UML</h1>
+    
+    <div class="legend">
+        <h3>Tipos de Relaciones</h3>
+        <ul>
+            <li><strong>→</strong> : Dependencia (usa temporalmente)</li>
+            <li><strong>--</strong> : Asociación (conoce a)</li>
+            <li><strong>◇--</strong> : Agregación (contiene, pero puede existir independientemente)</li>
+            <li><strong>◆--</strong> : Composición (contiene, existe solo dentro del contenedor)</li>
+            <li><strong>&lt;|--</strong> : Herencia (es un)</li>
+            <li><strong>..|&gt;</strong> : Implementación (implementa interfaz)</li>
+        </ul>
+    </div>
+
+    <script>
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+        
+        // Botón para imprimir/guardar PDF
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const printBtn = document.createElement('button');
+                printBtn.textContent = '📥 Guardar como PDF';
+                printBtn.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    padding: 15px 30px;
+                    background-color: #2C5F7C;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                    font-size: 16px;
+                    z-index: 1000;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                `;
+                printBtn.onclick = () => window.print();
+                document.body.appendChild(printBtn);
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
