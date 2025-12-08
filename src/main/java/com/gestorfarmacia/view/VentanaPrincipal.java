@@ -36,7 +36,7 @@ public class VentanaPrincipal extends JFrame {
         // Menú Ayuda
         JMenu menuAyuda = new JMenu("Ayuda");
         JMenuItem itemAcercaDe = new JMenuItem("Acerca de");
-        itemAcercaDe.addActionListener(e -> DialogoAcercaDe.mostrar(this));
+        itemAcercaDe.addActionListener(evento -> DialogoAcercaDe.mostrar(this));
         menuAyuda.add(itemAcercaDe);
 
         menuBar.add(menuAyuda);

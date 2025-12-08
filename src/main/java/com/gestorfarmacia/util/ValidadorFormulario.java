@@ -1,46 +1,49 @@
 package com.gestorfarmacia.util;
 
 import com.gestorfarmacia.view.VentanaPrincipal;
-import javax.swing.*;
 
-public class ValidadorFormulario {
-    private VentanaPrincipal vista;
+public class ValidadorFormulario implements Validador {
+    private final VentanaPrincipal vista;
+    private String mensajeError;
 
     public ValidadorFormulario(VentanaPrincipal vista) {
         this.vista = vista;
     }
 
-    public boolean validarCampos() {
-        // Validar código
+    @Override
+    public boolean validar() {
         if (vista.getTxtCodigo().getText().trim().isEmpty()) {
-            mostrarError("Debe ingresar un código");
+            mensajeError = "Debe ingresar un código";
             return false;
         }
-
-        // Validar nombre comercial
         if (vista.getTxtNombreComercial().getText().trim().isEmpty()) {
-            mostrarError("Debe ingresar un nombre comercial");
+            mensajeError = "Debe ingresar un nombre comercial";
             return false;
         }
-
-        // Validar laboratorio
         if (vista.getTxtLaboratorio().getText().trim().isEmpty()) {
-            mostrarError("Debe ingresar un laboratorio");
+            mensajeError = "Debe ingresar un laboratorio";
             return false;
         }
-
-        // Validar formato
         if (!vista.getRbPastillas().isSelected() &&
                 !vista.getRbJarabe().isSelected() &&
                 !vista.getRbInyectable().isSelected()) {
-            mostrarError("Debe seleccionar un formato");
+            mensajeError = "Debe seleccionar un formato";
             return false;
         }
-
         return true;
     }
 
-    private void mostrarError(String mensaje) {
-        vista.mostrarMensaje(mensaje, "Error de Validación", JOptionPane.ERROR_MESSAGE);
+    @Override
+    public String getMensajeError() {
+        return mensajeError;
+    }
+
+    // Método legacy para compatibilidad
+    public boolean validarCampos() {
+        boolean resultado = validar();
+        if (!resultado) {
+            MensajeFactory.mostrar(MensajeFactory.TipoMensaje.ERROR, mensajeError, vista);
+        }
+        return resultado;
     }
 }

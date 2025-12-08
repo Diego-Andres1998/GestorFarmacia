@@ -3,7 +3,7 @@ package com.gestorfarmacia.controller;
 import com.gestorfarmacia.model.Medicamento;
 import com.gestorfarmacia.repository.GestorMedicamentos;
 import com.gestorfarmacia.util.MedicamentoMapper;
-import com.gestorfarmacia.util.MensajesUI;
+import com.gestorfarmacia.util.MensajeFactory;
 import com.gestorfarmacia.util.ValidadorFormulario;
 import com.gestorfarmacia.view.VentanaPrincipal;
 import javax.swing.table.DefaultTableModel;
@@ -30,7 +30,7 @@ public class ControladorMedicamentos {
 
     private void inicializarEventos() {
         // Evento del botón Agregar/Actualizar
-        vista.getBtnAgregar().addActionListener(e -> {
+        vista.getBtnAgregar().addActionListener(evento -> {
             if (modoEdicion) {
                 actualizarMedicamento();
             } else {
@@ -39,18 +39,18 @@ public class ControladorMedicamentos {
         });
 
         // Evento del botón Eliminar
-        vista.getBtnEliminar().addActionListener(e -> eliminarMedicamento());
+        vista.getBtnEliminar().addActionListener(evento -> eliminarMedicamento());
 
         // Evento del botón Editar
-        vista.getBtnEditar().addActionListener(e -> cargarMedicamentoSeleccionado());
+        vista.getBtnEditar().addActionListener(evento -> cargarMedicamentoSeleccionado());
 
         // Evento del botón Limpiar
-        vista.getBtnLimpiar().addActionListener(e -> cancelarEdicion());
+        vista.getBtnLimpiar().addActionListener(evento -> cancelarEdicion());
 
         // Evento para guardar datos al cerrar la ventana
         vista.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
-            public void windowClosing(java.awt.event.WindowEvent e) {
+            public void windowClosing(java.awt.event.WindowEvent evento) {
                 gestor.guardarDatos();
             }
         });
@@ -61,14 +61,16 @@ public class ControladorMedicamentos {
             return;
         }
 
-        Medicamento medicamento = mapper.crearDesdeFformulario();
+        Medicamento medicamento = mapper.crearDesdeFormulario();
 
         if (gestor.agregarMedicamento(medicamento)) {
-            MensajesUI.mostrarMedicamentoAgregado(vista);
+            MensajeFactory.mostrar(MensajeFactory.TipoMensaje.EXITO,
+                    "Medicamento agregado exitosamente", vista);
             vista.limpiarCampos();
             cargarDatosEnTabla();
         } else {
-            MensajesUI.mostrarCodigoDuplicado(vista);
+            MensajeFactory.mostrar(MensajeFactory.TipoMensaje.ERROR,
+                    "Ya existe un medicamento con ese código", vista);
         }
     }
 
@@ -76,15 +78,17 @@ public class ControladorMedicamentos {
         int filaSeleccionada = vista.getTablaMedicamentos().getSelectedRow();
 
         if (filaSeleccionada == -1) {
-            MensajesUI.mostrarDebeSeleccionarFila(vista);
+            MensajeFactory.mostrar(MensajeFactory.TipoMensaje.ADVERTENCIA,
+                    "Debe seleccionar un medicamento de la tabla", vista);
             return;
         }
 
         String codigo = (String) vista.getModeloTabla().getValueAt(filaSeleccionada, 0);
 
-        if (MensajesUI.confirmarEliminacion(vista, codigo)) {
+        if (MensajeFactory.confirmar("¿Está seguro de eliminar el medicamento con código: " + codigo + "?", vista)) {
             if (gestor.eliminarMedicamento(codigo)) {
-                MensajesUI.mostrarMedicamentoEliminado(vista);
+                MensajeFactory.mostrar(MensajeFactory.TipoMensaje.EXITO,
+                        "Medicamento eliminado exitosamente", vista);
                 cargarDatosEnTabla();
                 vista.limpiarCampos();
             }
@@ -95,7 +99,8 @@ public class ControladorMedicamentos {
         int filaSeleccionada = vista.getTablaMedicamentos().getSelectedRow();
 
         if (filaSeleccionada == -1) {
-            MensajesUI.mostrarDebeSeleccionarFila(vista);
+            MensajeFactory.mostrar(MensajeFactory.TipoMensaje.ADVERTENCIA,
+                    "Debe seleccionar un medicamento de la tabla", vista);
             return;
         }
 
@@ -121,15 +126,16 @@ public class ControladorMedicamentos {
         }
 
         gestor.eliminarMedicamento(codigoOriginal);
-
-        Medicamento medicamento = mapper.crearDesdeFformulario();
+        Medicamento medicamento = mapper.crearDesdeFormulario();
 
         if (gestor.agregarMedicamento(medicamento)) {
-            MensajesUI.mostrarMedicamentoActualizado(vista);
+            MensajeFactory.mostrar(MensajeFactory.TipoMensaje.EXITO,
+                    "Medicamento actualizado exitosamente", vista);
             cancelarEdicion();
             cargarDatosEnTabla();
         } else {
-            MensajesUI.mostrarErrorActualizacion(vista);
+            MensajeFactory.mostrar(MensajeFactory.TipoMensaje.ERROR,
+                    "Error al actualizar medicamento", vista);
         }
     }
 
@@ -145,14 +151,14 @@ public class ControladorMedicamentos {
         DefaultTableModel modelo = vista.getModeloTabla();
         modelo.setRowCount(0);
 
-        for (Medicamento med : gestor.obtenerTodos()) {
+        for (Medicamento medicamento : gestor.obtenerTodos()) {
             Object[] fila = {
-                    med.getCodigo(),
-                    med.getNombreComercial(),
-                    med.getLaboratorio(),
-                    med.getTipoVenta(),
-                    med.getFormato(),
-                    med.isRequiereFrio() ? "Sí" : "No"
+                    medicamento.getCodigo(),
+                    medicamento.getNombreComercial(),
+                    medicamento.getLaboratorio(),
+                    medicamento.getTipoVenta(),
+                    medicamento.getFormato(),
+                    medicamento.isRequiereFrio() ? "Sí" : "No"
             };
             modelo.addRow(fila);
         }

@@ -3,91 +3,83 @@ package com.gestorfarmacia.view.components;
 import javax.swing.*;
 import java.awt.*;
 
-public class PanelFormularioMedicamento extends JPanel {
-    // Componentes del formulario
-    private JTextField txtCodigo;
-    private JTextField txtNombreComercial;
-    private JTextField txtLaboratorio;
+public class PanelFormularioMedicamento extends BasePanel {
+    private JTextField txtCodigo, txtNombreComercial, txtLaboratorio;
     private JComboBox<String> cmbTipoVenta;
-    private JRadioButton rbPastillas;
-    private JRadioButton rbJarabe;
-    private JRadioButton rbInyectable;
+    private JRadioButton rbPastillas, rbJarabe, rbInyectable;
     private ButtonGroup grupoFormato;
     private JCheckBox chkRequiereFrio;
 
-    public PanelFormularioMedicamento() {
-        inicializarComponentes();
-    }
-
-    private void inicializarComponentes() {
+    @Override
+    protected void inicializarComponentes() {
         setLayout(new GridBagLayout());
-        setBorder(BorderFactory.createTitledBorder("Datos del Medicamento"));
+        configurarBorde("Datos del Medicamento");
 
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
+        GridBagConstraints restricciones = new GridBagConstraints();
+        restricciones.insets = new Insets(5, 5, 5, 5);
+        restricciones.fill = GridBagConstraints.HORIZONTAL;
 
-        // Campo Código
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        add(new JLabel("Código:"), gbc);
-        gbc.gridx = 1;
-        txtCodigo = new JTextField(15);
-        add(txtCodigo, gbc);
+        // Fila 1
+        agregarCampo(restricciones, 0, 0, "Código:", txtCodigo = new JTextField(15));
+        agregarCampo(restricciones, 2, 0, "Nombre Comercial:", txtNombreComercial = new JTextField(15));
 
-        // Campo Nombre Comercial
-        gbc.gridx = 2;
-        add(new JLabel("Nombre Comercial:"), gbc);
-        gbc.gridx = 3;
-        txtNombreComercial = new JTextField(15);
-        add(txtNombreComercial, gbc);
+        // Fila 2
+        agregarCampo(restricciones, 0, 1, "Laboratorio:", txtLaboratorio = new JTextField(15));
 
-        // Campo Laboratorio
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        add(new JLabel("Laboratorio:"), gbc);
-        gbc.gridx = 1;
-        txtLaboratorio = new JTextField(15);
-        add(txtLaboratorio, gbc);
-
-        // ComboBox Tipo de Venta
-        gbc.gridx = 2;
-        add(new JLabel("Tipo de Venta:"), gbc);
-        gbc.gridx = 3;
         String[] tiposVenta = { "Libre", "Receta Simple", "Receta Retenida" };
-        cmbTipoVenta = new JComboBox<>(tiposVenta);
-        add(cmbTipoVenta, gbc);
+        agregarCampo(restricciones, 2, 1, "Tipo de Venta:", cmbTipoVenta = new JComboBox<>(tiposVenta));
 
-        // RadioButtons para Formato
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        add(new JLabel("Formato:"), gbc);
-        gbc.gridx = 1;
-        gbc.gridwidth = 3;
+        // Fila 3 - Radio Buttons
+        restricciones.gridx = 0;
+        restricciones.gridy = 2;
+        add(new JLabel("Formato:"), restricciones);
+
+        restricciones.gridx = 1;
+        restricciones.gridwidth = 3;
         JPanel panelFormato = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        rbPastillas = new JRadioButton("Pastillas");
-        rbJarabe = new JRadioButton("Jarabe");
-        rbInyectable = new JRadioButton("Inyectable");
-
-        // Agrupar los radio buttons para que solo uno esté seleccionado
         grupoFormato = new ButtonGroup();
-        grupoFormato.add(rbPastillas);
-        grupoFormato.add(rbJarabe);
-        grupoFormato.add(rbInyectable);
-        panelFormato.add(rbPastillas);
-        panelFormato.add(rbJarabe);
-        panelFormato.add(rbInyectable);
-        add(panelFormato, gbc);
 
-        // CheckBox Requiere Frío
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 2;
+        rbPastillas = crearRadioButton("Pastillas", grupoFormato, panelFormato);
+        rbJarabe = crearRadioButton("Jarabe", grupoFormato, panelFormato);
+        rbInyectable = crearRadioButton("Inyectable", grupoFormato, panelFormato);
+
+        add(panelFormato, restricciones);
+
+        // Fila 4 - CheckBox
+        restricciones.gridx = 0;
+        restricciones.gridy = 3;
+        restricciones.gridwidth = 2;
         chkRequiereFrio = new JCheckBox("Requiere Refrigeración");
-        add(chkRequiereFrio, gbc);
+        add(chkRequiereFrio, restricciones);
     }
 
-    // Getters para acceder a los componentes
+    private void agregarCampo(GridBagConstraints restricciones, int x, int y, String label, JComponent campo) {
+        restricciones.gridx = x;
+        restricciones.gridy = y;
+        restricciones.gridwidth = 1;
+        add(new JLabel(label), restricciones);
+        restricciones.gridx = x + 1;
+        add(campo, restricciones);
+    }
+
+    private JRadioButton crearRadioButton(String texto, ButtonGroup grupo, JPanel panel) {
+        JRadioButton radioButton = new JRadioButton(texto);
+        grupo.add(radioButton);
+        panel.add(radioButton);
+        return radioButton;
+    }
+
+    @Override
+    public void limpiar() {
+        txtCodigo.setText("");
+        txtNombreComercial.setText("");
+        txtLaboratorio.setText("");
+        cmbTipoVenta.setSelectedIndex(0);
+        grupoFormato.clearSelection();
+        chkRequiereFrio.setSelected(false);
+    }
+
+    // Getters
     public JTextField getTxtCodigo() {
         return txtCodigo;
     }
@@ -120,13 +112,8 @@ public class PanelFormularioMedicamento extends JPanel {
         return chkRequiereFrio;
     }
 
-    // Método para limpiar todos los campos
+    // Método legacy para compatibilidad
     public void limpiarCampos() {
-        txtCodigo.setText("");
-        txtNombreComercial.setText("");
-        txtLaboratorio.setText("");
-        cmbTipoVenta.setSelectedIndex(0);
-        grupoFormato.clearSelection();
-        chkRequiereFrio.setSelected(false);
+        limpiar();
     }
 }

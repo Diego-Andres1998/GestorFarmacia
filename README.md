@@ -53,37 +53,108 @@ Sistema profesional de gestión para registro y control de medicamentos en farma
 ├── 📄 Main.java                    # Punto de entrada
 │
 ├── 📁 model/
-│   └── Medicamento.java            # Modelo de datos
+│   └── Medicamento.java            # Modelo de datos (Serializable)
 │
 ├── 📁 view/
-│   ├── VentanaPrincipal.java       # Vista principal (127 líneas)
+│   ├── VentanaPrincipal.java       # Vista principal
 │   └── components/
+│       ├── BasePanel.java          # Clase base abstracta (HERENCIA)
 │       ├── PanelFormularioMedicamento.java
 │       ├── PanelTablaMedicamentos.java
 │       └── PanelBotonesCRUD.java
 │
 ├── 📁 controller/
-│   └── ControladorMedicamentos.java # Controlador (162 líneas)
+│   └── ControladorMedicamentos.java # Controlador MVC
 │
 ├── 📁 repository/
-│   └── GestorMedicamentos.java     # Persistencia de datos
+│   ├── Repositorio.java            # Interface genérica CRUD (POLIMORFISMO)
+│   └── GestorMedicamentos.java     # Implementación de persistencia
 │
 └── 📁 util/
-    ├── DialogoAcercaDe.java        # Diálogo "Acerca de"
-    ├── ValidadorFormulario.java    # Validación centralizada
-    ├── MedicamentoMapper.java      # Mapeo formulario ↔ modelo
-    └── MensajesUI.java             # Mensajes centralizados
+    ├── Validador.java              # Interface (POLIMORFISMO)
+    ├── Mapper.java                 # Interface genérica (POLIMORFISMO)
+    ├── ValidadorFormulario.java    # Implementa Validador
+    ├── MedicamentoMapper.java      # Implementa Mapper<Medicamento>
+    ├── MensajeFactory.java         # Factory Pattern
+    └── DialogoAcercaDe.java        # Diálogo "Acerca de"
 ```
 
-### Patrones de Diseño Aplicados
+### Diagrama UML Simplificado
 
-| Patrón | Implementación | Beneficio |
-|--------|----------------|-----------|
-| **MVC** | Model-View-Controller | Separación de responsabilidades |
-| **Composite** | Componentes de Vista | UI modular y reutilizable |
-| **Strategy** | Validador, Mapper | Estrategias intercambiables |
-| **Facade** | MensajesUI | Interfaz simplificada |
-| **Repository** | GestorMedicamentos | Abstracción de persistencia |
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                          INTERFACES                                 │
+├─────────────────────────────────────────────────────────────────────┤
+│  <<interface>>                <<interface>>            <<interface>>│
+│   Validador                    Mapper<T>              Repositorio<T>│
+│  + validar()              + crearDesdeFormulario()   + agregar(T)   │
+│  + getMensajeError()      + cargarEnFormulario(T)   + eliminar(ID)  │
+│                                                       + buscarPorId()│
+│                                                       + obtenerTodos()│
+└─────────────────────────────────────────────────────────────────────┘
+         ▲                           ▲                        ▲
+         │                           │                        │
+         │implements          implements              implements
+         │                           │                        │
+┌────────┴────────┐       ┌──────────┴─────────┐    ┌────────┴────────┐
+│ValidadorFormulario│     │MedicamentoMapper   │    │GestorMedicamentos│
+├─────────────────┤       ├────────────────────┤    ├──────────────────┤
+│- vista           │       │- vista             │    │- medicamentos    │
+│- mensajeError    │       │                    │    │- rutaArchivo     │
+├─────────────────┤       ├────────────────────┤    ├──────────────────┤
+│+ validar()       │       │+ crearDesde...()   │    │+ agregar()       │
+│+ validarCampos() │       │+ cargarEn...()     │    │+ eliminar()      │
+└─────────────────┘       └────────────────────┘    │+ buscarPorId()   │
+                                                      │+ obtenerTodos()  │
+                                                      │+ guardarDatos()  │
+                                                      └──────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                        CLASE ABSTRACTA                              │
+├─────────────────────────────────────────────────────────────────────┤
+│                       BasePanel (abstract)                          │
+│         + inicializarComponentes() {abstract}                       │
+│         + limpiar() {abstract}                                      │
+│         + configurarBorde(String)                                   │
+└─────────────────────────────────────────────────────────────────────┘
+                              ▲
+                              │ extends
+                 ┌────────────┼────────────┐
+                 │            │            │
+    ┌────────────┴─────┐  ┌──┴──────────┐ ├─────────────────┐
+    │PanelFormulario...│  │PanelBotones │ │PanelTabla...    │
+    │- restricciones: GBC│  │- botones:Map│ │- modelo: DTM    │
+    │+ limpiar()       │  │+ limpiar()  │ │+ getTabla()     │
+    └──────────────────┘  └─────────────┘ └─────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                           MODELO                                    │
+├─────────────────────────────────────────────────────────────────────┤
+│                     Medicamento (Serializable)                      │
+│  - codigo: String                                                   │
+│  - nombreComercial: String                                          │
+│  - laboratorio: String                                              │
+│  - tipoVenta: String                                                │
+│  - formato: String                                                  │
+│  - requiereFrio: boolean                                            │
+│  + getters/setters                                                  │
+└─────────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────┐
+│                         CONTROLADOR                                 │
+├─────────────────────────────────────────────────────────────────────┤
+│                    ControladorMedicamentos                          │
+│  - vista: VentanaPrincipal                                          │
+│  - gestor: GestorMedicamentos                                       │
+│  - validador: ValidadorFormulario                                   │
+│  - mapper: MedicamentoMapper                                        │
+│  - modoEdicion: boolean                                             │
+│  + agregarMedicamento()                                             │
+│  + eliminarMedicamento()                                            │
+│  + actualizarMedicamento()                                          │
+│  + cargarMedicamentoSeleccionado()                                  │
+└─────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
